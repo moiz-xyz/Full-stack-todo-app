@@ -2,7 +2,7 @@ import List from "../../modal/ListsSchea.js";
 import { listSchema } from "../../Valiadors/joilists.js";
 
 export const CreateTodo = async (req, res) => {
-  const { task, isCompleted } = req.body;
+  const { task } = req.body;
 
   try {
     await listSchema.validateAsync(req.body);
@@ -17,7 +17,6 @@ export const CreateTodo = async (req, res) => {
 
     const createTodo = await List.create({
       task,
-      isCompleted,
       user: req.user._id, 
     });
 

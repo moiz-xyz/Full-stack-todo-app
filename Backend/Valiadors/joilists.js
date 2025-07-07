@@ -7,5 +7,5 @@ export const listSchema = Joi.object({
     "string.empty": "Task is required",
     "string.min": "Task must be at least 2 characters long",
   }),
-  isCompleted: Joi.boolean().optional()
+
 });

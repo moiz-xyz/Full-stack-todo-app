@@ -3,12 +3,12 @@ import List from "../../modal/ListsSchea.js";
 export const EditTodo = async (req, res) => {
   try {
     const { id } = req.params;
- const { task, isCompleted } = req.body;
+  const { task } = req.body;
    
     const todo = await List.findOneAndUpdate(
       { _id: id, 
         user: req.user._id },
-      { task , isCompleted } , 
+      { task } , 
       { new: true, runValidators: true }
     );
 

@@ -1,117 +1,96 @@
-import { useState } from "react";
-import { Addlist } from "../Api/Add todo.js";
-import { Deletelist } from "../Api/deleteTodo.js";
-import { Editlist } from "../Api/editTodo.js";
+import { useState, useEffect } from "react";
+import { getList } from "../Api/gettodo";
+import { Editlist } from "../Api/editTodo";
+import { Deletelist } from "../Api/deleteTodo";
+import { Addlist } from "../Api/TodoApi";
+
 
 const Todo = () => {
-    
-  const [task, setTask] = useState("");           
-  const [tasks, setTasks] = useState([]);          
-  const [editIndex, setEditIndex] = useState(null); 
 
+  const [todos, setTodos] = useState([]);
+  const [task, setTask]   = useState("");
+  const [editId, setEditId] = useState(null); 
 
-  const handleDBAdd = async (e) => {
-    e.preventDefault(); 
-    try {
-        const res = await Addlist({title: task});
-      console.log("list added", res);
-    } catch (error) {
-      console.error(error.response?.data);
-    }
-  };
+  useEffect(() => {
+    (async () => {
+      try {
+       const res = await getList(); 
+       setTodos(res.data.map(({ _id, task }) => ({ id: _id, task })));
+      } catch (err) {
+        console.error(err.response?.data || err.message);
+      }
+    })();
+  }, []);
 
-const handleDBedit = async (e) => {
-    e.preventDefault(); 
-    try {
-        const res = await Editlist();
-      console.log("list edit", res);
-    } catch (error) {
-      console.error(error.response?.data);
-    }
-  };
-
-const handleDBdelete = async (e) => {
-    e.preventDefault(); 
-    try {
-        const res = await Deletelist(task);
-      console.log("list delete", res);
-    } catch (error) {
-      console.error(error.response?.data);
-    }
-  };
-
-
-
-  const handleAdd = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (task.trim() === "") return;
 
-    if (editIndex !== null) {
-      const updated = [...tasks];
-      updated[editIndex] = task;
-      setTasks(updated);
-      setEditIndex(null);
-    } else {
-      setTasks([...tasks, task]);
-    }
-    setTask("");
-    handleDBsubmit()
-  };
+    try {
+      if (editId) {
+        const updated = await Editlist(editId, { task });
+        setTodos((prev) =>
+          prev.map((t) =>
+            t.id === editId ? { ...t, task } : t
+          )
+        );
+        setEditId(null);
+      } else {
+        const created = await Addlist(task);
+        setTodos((prev) => [...prev, { id: Date.now(), task }]);
+      }
 
-  const handleEdit = (index) => {
-    setTask(tasks[index]);
-    setEditIndex(index);
-    handleDBedit()
-  };
-
-  const handleDelete = (index) => {
-    const updated = [...tasks];
-    updated.splice(index, 1);
-    setTasks(updated);
-    if (editIndex === index) {
-      setEditIndex(null);
       setTask("");
+    } catch (err) {
+      console.error(err.response?.data || err.message);
     }
-    handleDBdelete()
+  };
+
+  const startEdit = (id, currentTask) => {
+    setEditId(id);
+    setTask(currentTask);
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      await Deletelist(id);
+      setTodos((prev) => prev.filter((t) => t.id !== id));
+      if (editId === id) {
+        setEditId(null);
+        setTask("");
+      }
+    } catch (err) {
+      console.error(err.response?.data || err.message);
+    }
   };
 
   return (
     <div className="main">
-      <h2 style={{ textAlign: "center" }}> React Todo App</h2>
+      <h2 style={{ textAlign: "center" }}>React Todo App</h2>
 
-      <form onSubmit={handleAdd} className="form">
+      <form onSubmit={handleSubmit} className="form">
         <input
           type="text"
           placeholder="Enter a task"
           value={task}
           onChange={(e) => setTask(e.target.value)}
         />
-        <button type="submit">
-          {editIndex !== null ? "Update" : "Add"}
-        </button>
+        <button type="submit">{editId ? "Update" : "Add"}</button>
       </form>
 
-      <ul style={{ listStyle: "none", padding: 0 }}>
-        {tasks.map((t, index) => (
+      <ul>
+        {todos.map(({ id, task } , index) => (
           <li
-            key={index}
-            style={{
-              background: "#f0f0f0",
-              padding: "10px",
-              marginBottom: "10px",
-              borderRadius: "5px",
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <span>{t}</span>
+            key={id || `${index}`}>
+            <span>{task}</span>
             <div>
-              <button onClick={() => handleEdit(index)} style={{ marginRight: "10px" }}>
+              <button
+                onClick={() => startEdit(id, task)}
+                style={{ marginRight: "10px" }}
+              >
                 Edit
               </button>
-              <button onClick={() => handleDelete(index)}>Delete</button>
+              <button onClick={() => handleDelete(id)}>Delete</button>
             </div>
           </li>
         ))}

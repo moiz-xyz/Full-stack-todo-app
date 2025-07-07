@@ -14,7 +14,6 @@ const verifytoken = (req, res, next) => {
     const token = authHeader.split(" ")[1];
 
     jwt.verify(token, process.env.SECRET_KEY, (err, decoded) => {
-      // console.log('err:',err)
       if (err) {
         return res.status(401).send({
           status: 401,

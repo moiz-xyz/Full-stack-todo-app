@@ -7,11 +7,7 @@ const ListSchema = new Schema({
     required: true,
     trim: true,
   },
-  isCompleted: {
-    type: Boolean,
-    default: false,
-  },
-    user: {
+ user: {
     type: Schema.Types.ObjectId,
     ref: "User",
     required: true,

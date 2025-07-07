@@ -11,7 +11,7 @@ const router = express.Router();
 
 router.post("/createTodo", verifytoken, CreateTodo);
 
-router.get("/getTodo",verifytoken ,GetAllTodo);
+router.get("/getTodo", verifytoken ,GetAllTodo);
 
 router.delete("/deleteTodo/:id", verifytoken, DeleteTodo);
 

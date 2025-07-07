@@ -1,38 +1,39 @@
-import User from "../../modal/UserSchema.js";
-import { signupSchema } from "../../Valiadors/joi.js";
+import User from "../../modal/UserSchema.js" ;
 import bcrypt from "bcrypt"
+import { signupSchema } from "../../Valiadors/joi.js";
 
 export const CreateUser = async (req, res) => {
-  const { name , username, email, password } = req.body;
-
   try {
-    const userexists = await User.findOne({ email });
-    if (userexists) {
-      return res.status(409).send({
-        status: 409,
-        message: "User already exists",
-      });
+    await signupSchema.validateAsync(req.body);
+
+    const { name, username, email, password } = req.body;
+
+    const exists = await User.findOne ({ email });
+    if (exists) {
+      return res.status(409).json({ status: 409, message: "User already exists" });
     }
 
-    await signupSchema.validateAsync(req.body);
-   const password_in_Hash = await bcrypt.hash(password, 10);
+    const hash = await bcrypt.hash(password, 10);
 
-     const createUser = await User.create({
+    const user = await User.create({
       name,
       username,
       email,
-      password: password_in_Hash,
-    })
-    return res.status(201).send({
-        status: 201,
-        message: "User created successfully",
+      password: hash,
     });
 
-  } catch (error) {
-    return res.status(500).send({
-      status: 500,
-      message: error.message || "Internal server error",
+    const userObj = user.toObject();
+    delete userObj.password;
+
+    return res.status(201).json({
+      status: 201,
+      message: "User created successfully",
+      data: userObj,
     });
+  } catch (err) {
+    if (err.isJoi) {
+      return res.status(400).json({ status: 400, message: err.message });
+    }
+    return res.status(500).json({ status: 500, message: err.message });
   }
 };
-

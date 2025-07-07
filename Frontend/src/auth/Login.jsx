@@ -17,7 +17,7 @@ const Login = () => {
      e.preventDefault(); 
     try {
        const res = await loginUser(form);
-    //    console.log("Successfully Loged in:", res.token);
+      //  console.log("Successfully Loged in:", res.token);
        const token = res.token;
       if (token) {
         localStorage.setItem("authToken", token);
@@ -32,7 +32,7 @@ const Login = () => {
   return (
     <>
     <form className="signup-wrapper"  onSubmit={handleSubmit}>
-      <h2>login</h2>
+      <h2>Login</h2>
       <div className="email">
         <input
          name="email"

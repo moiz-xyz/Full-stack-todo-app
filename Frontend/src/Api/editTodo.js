@@ -1,13 +1,15 @@
-import axios from "axios";
+import axiosInstance from "../axioxInstance/axiosInstance";
 
-const apiUrl = "http://localhost:3000/api/todo/EditTodo";
-
-export const Editlist = async (userTodo) => {
+/**
+ * @param {string} id    
+ * @param {object} data  
+ */
+export const Editlist = async (id, data) => {
   try {
-    const resp = await axios.patch(apiUrl , userTodo);
+    const resp = await axiosInstance.patch(`/todo/EditTodo/${id}`, data);
     return resp.data;
   } catch (error) {
-    const message = error.response?.data?.message || "Signup failed";
+    const message = error.response?.data?.message || "Edit failed";
     throw new Error(message);
   }
 };

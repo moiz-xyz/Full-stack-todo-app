@@ -1,10 +1,11 @@
+import axios from "axios";
 import axiosInstance from "../axioxInstance/axiosInstance";
 
-const apiUrl = "http://localhost:3000/api/todo/CreateTodo";
+const apiUrl = "http://localhost:3000/api/todo/getTodo" ; 
 
-export const Addlist = async (task) => {
+export const getList = async (userTodo) => {
   try {
-    const resp = await axiosInstance.post(apiUrl , {task});
+    const resp = await axiosInstance.get(apiUrl , userTodo);
     return resp.data;
   } catch (error) {
     const message = error.response?.data?.message || "Signup failed";
