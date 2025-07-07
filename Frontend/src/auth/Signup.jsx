@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { signupUser } from "../Api/signupApi";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Signup = () => {
   const [form, setform] = useState({
@@ -76,6 +76,7 @@ const navigate = useNavigate();
       </div>
 
       <button type="submit">Sign-Up</button>
+        <p className="auth-switch">Already have an account? <Link to="/login">Login</Link></p>
     </form>
   );
 };

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { loginUser } from "../Api/loginApi";
 
@@ -54,6 +54,8 @@ const Login = () => {
       <button type="submit">
         Login
       </button>
+      <p className="auth-switch">Don't have an account? <Link to="/signup">Sign up</Link></p>
+      <p className="auth-switch"><Link to="/forgotPassword"> Forget password</Link></p>
     </form>
      </>
   );
