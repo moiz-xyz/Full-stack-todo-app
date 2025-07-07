@@ -9,12 +9,12 @@ import verifytoken from "../../MiddleWare.js/verifytoken.js";
 
 const router = express.Router();
 
-router.post("/createTodo", verifytoken,CreateTodo);
+router.post("/createTodo", verifytoken, CreateTodo);
 
-router.get("/getTodo",verifytoken,GetAllTodo);
+router.get("/getTodo",verifytoken ,GetAllTodo);
 
-router.delete("/deleteTodo", verifytoken,DeleteTodo);
+router.delete("/deleteTodo/:id", verifytoken, DeleteTodo);
 
-router.put("/editTodo/:id", verifytoken, EditTodo);
+router.patch("/editTodo/:id", verifytoken, EditTodo);
 
 export default router;
