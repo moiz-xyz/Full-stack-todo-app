@@ -1,39 +1,76 @@
 import { useState } from "react";
 import { signupUser } from "../Api/signupApi";
 import { Link, useNavigate } from "react-router-dom";
+import { Alert, Spin } from "antd";
 
 const Signup = () => {
-  const [form, setform] = useState({
+  const [form, setForm] = useState({
     name: "",
     username: "",
     email: "",
     password: "",
   });
-const navigate = useNavigate(); 
-  const handleChange = (e) => {
-    setform({ ...form, [e.target.name]: e.target.value });
-  };
+
+  const [errorMsg, setErrorMsg]   = useState(null);
+  const [successMsg, setSuccessMsg] = useState(null);
+  const [loading, setLoading]     = useState(false);
+
+  const navigate = useNavigate();
+
+  const handleChange = (e) =>
+    setForm({ ...form, [e.target.name]: e.target.value });
+
+  const resetForm = () =>
+    setForm({ name: "", username: "", email: "", password: "" });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setErrorMsg(null);
+    setSuccessMsg(null);
+    setLoading(true);
+
     try {
-      const res = await signupUser(form);
-      console.log("Successfully signed up:", res);
-      setform({
-        name: "",
-        username: "",
-        email: "",
-        password: "",
-      });
-       navigate("/login");     
-    } catch (error) {
-      console.error("Signup failed:", error.response?.data || error.message);
+      await signupUser(form);          // call API
+      resetForm();                     // clear inputs
+      setSuccessMsg("Account created! Redirecting to login…");
+      setTimeout(() => navigate("/login"), 1000);
+    } catch (err) {
+      const msg =
+        err.response?.data?.message ||
+        err.message ||
+        "Signup failed. Please try again.";
+      setErrorMsg(msg);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <form className="signup-wrapper" onSubmit={handleSubmit}>
       <h2>Create an account</h2>
+
+      {errorMsg && (
+        <Alert
+          type="error"
+          message="Error"
+          description={errorMsg}
+          showIcon
+          closable
+          onClose={() => setErrorMsg(null)}
+          style={{ marginBottom: 16 }}
+        />
+      )}
+
+      {successMsg && (
+        <Alert
+          type="success"
+          message={successMsg}
+          showIcon
+          closable
+          onClose={() => setSuccessMsg(null)}
+          style={{ marginBottom: 16 }}
+        />
+      )}
 
       <div className="name">
         <input
@@ -42,6 +79,7 @@ const navigate = useNavigate();
           placeholder="Enter your name"
           value={form.name}
           onChange={handleChange}
+          required
         />
       </div>
 
@@ -52,6 +90,7 @@ const navigate = useNavigate();
           placeholder="Enter your username"
           value={form.username}
           onChange={handleChange}
+          required
         />
       </div>
 
@@ -62,6 +101,7 @@ const navigate = useNavigate();
           placeholder="Enter your email address"
           value={form.email}
           onChange={handleChange}
+          required
         />
       </div>
 
@@ -72,11 +112,23 @@ const navigate = useNavigate();
           placeholder="Enter your password"
           value={form.password}
           onChange={handleChange}
+          required
         />
       </div>
 
-      <button type="submit">Sign-Up</button>
-        <p className="auth-switch">Already have an account? <Link to="/login">Login</Link></p>
+      <button type="submit" disabled={loading}>
+        {loading ? (
+          <>
+            <Spin size="small" /> &nbsp;Signing up…
+          </>
+        ) : (
+          "Sign‑Up"
+        )}
+      </button>
+
+      <p className="auth-switch">
+        Already have an account? <Link to="/login">Login</Link>
+      </p>
     </form>
   );
 };

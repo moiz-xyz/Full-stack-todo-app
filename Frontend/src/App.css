@@ -107,6 +107,12 @@ li{
   align-items: center;
 
 }
+.task-text {
+  flex: 1;                  /* take remaining space */
+  word-break: break-word;   /* allow long words to wrap */
+  text-align: left;         /* keep left‑aligned */
+  margin-right: 1rem;       /* gap between text and buttons */
+}
 .task {
   text-align: left;
   max-height: 300px;
@@ -144,7 +150,14 @@ li{
   font-weight: 600;  
   color: #14532d;   
 }
-/* Card */
+.fp-wrapper {
+  min-height: 100dvh;            
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f2f4f7;
+  padding: 1rem;
+}
 .fp-card {
   background: #ffffff;
   max-width: 380px;
@@ -157,7 +170,6 @@ li{
   gap: 1.25rem;
 }
 
-/* Title */
 .fp-title {
   margin: 0;
   font-weight: 700;
@@ -165,7 +177,6 @@ li{
   text-align: center;
 }
 
-/* Input */
 .fp-input {
   font-size: 1rem;
   padding: 0.9rem 1rem;
@@ -180,7 +191,6 @@ li{
   box-shadow: 0 0 0 3px rgba(37,99,235,.2);
 }
 
-/* Button */
 .fp-btn {
   padding: 0.6rem 0.7rem;
   background: #2563eb;

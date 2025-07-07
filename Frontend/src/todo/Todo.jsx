@@ -8,14 +8,14 @@ import { Addlist } from "../Api/TodoApi";
 const Todo = () => {
 
   const [todos, setTodos] = useState([]);
-  const [task, setTask]   = useState("");
-  const [editId, setEditId] = useState(null); 
+  const [task, setTask] = useState("");
+  const [editId, setEditId] = useState(null);
 
   useEffect(() => {
     (async () => {
       try {
-       const res = await getList(); 
-       setTodos(res.data.map(({ _id, task }) => ({ id: _id, task })));
+        const res = await getList();
+        setTodos(res.data.map(({ _id, task }) => ({ id: _id, task })));
       } catch (err) {
         console.error(err.response?.data || err.message);
       }
@@ -79,15 +79,11 @@ const Todo = () => {
       </form>
 
       <ul>
-        {todos.map(({ id, task } , index) => (
-          <li
-            key={id || `${index}`}>
-            <span>{task}</span>
+        {todos.map(({ id, task }, index) => (
+          <li key={id || `${index}`}>
+            <span className="task-text">{task}</span>  
             <div>
-              <button
-                onClick={() => startEdit(id, task)}
-                style={{ marginRight: "10px" }}
-              >
+              <button onClick={() => startEdit(id, task)} style={{ marginRight: "10px" }}>
                 Edit
               </button>
               <button onClick={() => handleDelete(id)}>Delete</button>

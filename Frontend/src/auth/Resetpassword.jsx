@@ -1,30 +1,41 @@
 import { useState } from "react";
 import { Alert, Spin } from "antd";
-import { getOtp } from "../Api/forgetPassword";
+import { resetPassword } from "../Api/forgetPassword";
 
-export default function ForgotPassword({ onVerify }) {
-  const [email, setEmail]     = useState("");
+export default function ResetPassword({ onVerify }) {
+  const [form, setForm] = useState({ password: "", confirm: "" });
+
   const [errorMsg, setErrorMsg]   = useState(null);
   const [successMsg, setSuccessMsg] = useState(null);
   const [loading, setLoading]     = useState(false);
+
+  const handleChange = (e) =>
+    setForm({ ...form, [e.target.name]: e.target.value });
+
+  const clearForm = () => setForm({ password: "", confirm: "" });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMsg(null);
     setSuccessMsg(null);
+
+    if (form.password !== form.confirm) {
+      setErrorMsg("Passwords do not match.");
+      return;
+    }
+
     setLoading(true);
-
     try {
-      await getOtp({ email }); 
-      setSuccessMsg("OTP sent! Check your inbox…");
+      await resetPassword({ password: form.password });       
+      clearForm();
+      setSuccessMsg("Password updated! Redirecting…");
 
-      setTimeout(() => onVerify?.(email), 1000);
-      setEmail("");
+      setTimeout(() => onVerify?.(), 1000);
     } catch (err) {
       const msg =
         err.response?.data?.message ||
         err.message ||
-        "Could not send OTP. Please try again.";
+        "Password reset failed. Please try again.";
       setErrorMsg(msg);
     } finally {
       setLoading(false);
@@ -34,7 +45,7 @@ export default function ForgotPassword({ onVerify }) {
   return (
     <div className="fp-wrapper">
       <form className="fp-card" onSubmit={handleSubmit}>
-        <h2 className="fp-title">Forgot Password</h2>
+        <h2 className="fp-title">Reset Password</h2>
 
         {errorMsg && (
           <Alert
@@ -59,27 +70,35 @@ export default function ForgotPassword({ onVerify }) {
           />
         )}
 
-        <p className="fp-help">
-          Enter the email address linked to your account. We’ll send you a one‑time
-          password (OTP).
-        </p>
+        <p className="fp-help">Enter the new password for your account.</p>
 
         <input
-          type="email"
+          type="password"
+          name="password"
           className="fp-input"
-          placeholder="Enter your email address"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Enter new password"
+          value={form.password}
+          onChange={handleChange}
+          required
+        />
+
+        <input
+          type="password"
+          name="confirm"
+          className="fp-input"
+          placeholder="Confirm new password"
+          value={form.confirm}
+          onChange={handleChange}
           required
         />
 
         <button className="fp-btn" type="submit" disabled={loading}>
           {loading ? (
             <>
-              <Spin size="small" /> &nbsp;Sending…
+              <Spin size="small" /> &nbsp;Saving…
             </>
           ) : (
-            "Send"
+            "Verify"
           )}
         </button>
       </form>

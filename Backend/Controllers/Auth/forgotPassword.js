@@ -2,6 +2,7 @@
 import jwt from "jsonwebtoken";
 import transporter from "../../Transporter/Transporter.js";
 import User from "../../modal/UserSchema.js";
+import { compareHash, hashValue, otpGenerate  } from "../../Helpers/otp.js";
 
 export const generateOtp = async (req, res) => {
   const { email } = req.body;
